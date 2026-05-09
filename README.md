@@ -48,6 +48,6 @@ The use of direct flash memory write commands (Save) and the provided scripts is
 This is a mixed-license project to ensure both the software tools and the discovered knowledge remain open:
 
 * **Source Code**: All scripts, tools, and code (e.g., `.py`, `.js`, `.html`) are licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE-GPL](./LICENSE-GPL) for details.
-* **Documentation & Research**: All technical specifications, protocol research, and memory maps (e.g., `.md` files in `/docs`) are licensed under the **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**. See [LICENSE-CC](./LICENSE-CC) for details.
+* **Documentation & Research**: All technical specifications, protocol research, and memory maps (e.g., `.md` files in `/docs`) are licensed under the **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**. See [LICENSE-CC](./LICENSE) for details.
 
 By contributing to this project, you agree that your contributions will be licensed under these same terms.
