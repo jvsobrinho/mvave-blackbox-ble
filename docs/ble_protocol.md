@@ -97,3 +97,17 @@ Command used to request the current state of all active parameters in RAM from t
 | Action | Base Hexadecimal Payload |
 | :----- | :----------------------- |
 | **Request RAM Dump** | `00 59 23 08 00 00 04 00 00 00 10 5C 00 00 8F` The return is sent via Notify (`0x0064`) containing a continuous 92-byte dump, aligned with the Memory Map. |
+
+---
+
+## Device Responses & Acknowledgments (ACK)
+
+When interacting with the pedal via the Notify characteristic (`ae42`), it not only returns large requested payloads (like the 107-byte RAM Dump) but also sends automatic short packets to confirm state changes.
+
+Whenever a successful **Live Memory Write** command is executed (such as toggling a block or turning a knob), the pedal's microcontroller immediately returns an 8-byte Acknowledge (ACK) packet to confirm that the memory was safely overwritten.
+
+| Packet Type | Hexadecimal Payload | Description |
+| :--- | :--- | :--- |
+| **Success ACK** | `00 59 00 01 00 00 00 FF` | Confirms the command was received and executed without errors. Can be safely ignored by the client UI. |
+
+*(Note: The last byte `FF` is the mathematical result of the Checksum formula `0xFF - 0`, since the sum of the useful bytes in this specific packet is zero).*
