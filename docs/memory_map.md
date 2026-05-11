@@ -102,25 +102,29 @@ The order of the pedals in the audio chain is defined by a continuous block of 6
 
 ---
 
-## Customization and AMP / IR (CAB) Names
+## Customization and AMP / IR (CAB) Names (Handshake Sequence)
 
-The pedal allows the user to load custom files to replace the factory models: Amplifier Captures (`.am4`) and Impulse Responses for Cabinets (`.wav`).
-
-Although the BLE commands for changing the AMP (Addr `0F`) and CAB (Addr `13`) models only use the **numeric IDs (00 to 13 Hex)** to change the sound, the pedal stores the textual names of these files in hidden blocks in its Flash memory.
-
-When the official application connects to the pedal (the phase where it shows messages like *"reading amps..."*), it issues Flash Read commands (`00 59 23`) to these hidden addresses to collect the actual names and synchronize the User Interface (UI).
+The pedal stores the textual names of Amp Captures (`.am4`) and Cabinet IRs (`.wav`) in hidden blocks in its Flash memory. The client must extract these before rendering the UI (The "Reading Amps..." loading screen).
 
 * **AMP Names Base Address:** Flash `80 18 01 00` (Little Endian)
 * **CAB (IR) Names Base Address:** Flash `90 18 01 00` (Little Endian)
 
+To read these, the client sends the **Read String Blocks** command (`00 59 23 08 00 00 05...`).
+
+### MTU and Packet Fragmentation
+
+When a Read String Block command is sent, the pedal returns the entire dictionary of 20 names as a continuous null-terminated array. However, because the total string exceeds standard BLE MTU limits, **the pedal automatically fragments the response across multiple GATT Notifications**. 
+
+The client application must implement a buffer to concatenate these sequential incoming packets until all 20 names are extracted. 
+
 ### Name Translation (ASCII Decoding)
 
-Reading these blocks returns long hexadecimal strings that are directly converted into **ASCII** characters. The names are delimited by null bytes (`00`).
+Reading these blocks returns long hexadecimal strings that are directly converted into **ASCII** characters. The names are delimited by null bytes (`00`). Additionally, the pedal prefixes each name with its 1-based index number.
 
 Captured mapping examples from Flash to UI:
 
-* **Hex:** `41 43 2d 53 65 56 69 6e` -> **Translation:** `AC-SeVin`
-* **Hex:** `4a 56 4d 5f 31 39 36 30 5f 35 37` -> **Translation:** `JVM_1960_57`
-* **Hex:** `56 4f 58 5f 41 43 33 30` -> **Translation:** `VOX_AC30`
+* **Hex:** `31 41 43 2d 53 65 56 69 6e 00` -> **Raw:** `1AC-SeVin` -> **UI:** `AC-SeVin`
+* **Hex:** `32 4a 56 4d 5f 31 39 36 30 5f 35 37 00` -> **Raw:** `2JVM_1960_57` -> **UI:** `JVM_1960_57`
+* **Hex:** `31 34 52 65 63 74 6f 5f 31 31 32 00` -> **Raw:** `14Recto_112` -> **UI:** `Recto_112`
 
-*(Development Note: In a simple MIDI controller or Web Editor project, reading these blocks can be ignored, operating only with the Numeric ID matrix of `0 to 19`).*
+*(Development Note: The client must parse out the leading numbers before displaying the names in a dropdown).*

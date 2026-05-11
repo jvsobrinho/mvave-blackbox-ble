@@ -85,18 +85,20 @@ The pedal allows direct Read/Write access to the Flash memory for Preset manipul
 
 | Action | Base Hexadecimal Payload |
 | :----- | :----------------------- |
-| **Read Flash (Request)** | `00 59 23 08 00 00 04 [ADDR_4B] 5C 00 00 [CS]` Extracts a preset silently. Returns via Notify (`0x0064`). |
-| **Write Flash (Save)** | `00 59 22 64 00 00 04 [ADDR_4B] 5C 00 00 55 [92_BYTES_PAYLOAD] [CS]` Permanently saves the matrix to the slot. The 92-byte Payload must always be preceded by the `55` marker. |
+| **Read Flash Preset** | `00 59 23 08 00 00 04 [ADDR_4B] 5C 00 00 [CS]` Extracts a preset silently. Returns via Notify (`0x0064`). |
+| **Write Flash (Save)** | `00 59 22 64 00 00 04 [ADDR_4B] 5C 00 00 55 [92_BYTES_PAYLOAD] [CS]` Permanently saves the matrix to the slot. |
+| **Read String Blocks (Names)** | `00 59 23 08 00 00 05 00 00 00 [ADDR_4B] [CS]` (15 bytes). Specific request for ASCII data like Amp and Cab names. Uses routing `05` instead of `04`. |
 
 ---
 
-## State Reading (Polling / RAM Dump)
+## State Reading & Background Polling
 
-Command used to request the current state of all active parameters in RAM from the pedal (what the user is hearing and seeing on the screen right now).
+In addition to the 107-byte Live RAM Dump requested upon connection, the official application maintains active background polling for continuous data streams.
 
-| Action | Base Hexadecimal Payload |
-| :----- | :----------------------- |
-| **Request RAM Dump** | `00 59 23 08 00 00 04 00 00 00 10 5C 00 00 8F` The return is sent via Notify (`0x0064`) containing a continuous 92-byte dump, aligned with the Memory Map. |
+| Action | Base Hexadecimal Payload | Description |
+| :----- | :----------------------- | :---------- |
+| **Request RAM Dump** | `00 59 23 08 00 00 04 00 00 00 10 5C 00 00 8F` | 16-byte request. The return is a 107-byte array containing the current pedal state. |
+| **VU Meter / Tuner Stream (Candidate)** | `00 59 23 08 00 00 04 00 00 00 20 04 00 00 D7` | Sent continuously every ~1000ms. The pedal responds with short packets containing real-time output levels or tuner pitch data. | 
 
 ---
 
