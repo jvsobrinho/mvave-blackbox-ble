@@ -128,3 +128,32 @@ Captured mapping examples from Flash to UI:
 * **Hex:** `31 34 52 65 63 74 6f 5f 31 31 32 00` -> **Raw:** `14Recto_112` -> **UI:** `Recto_112`
 
 *(Development Note: The client must parse out the leading numbers before displaying the names in a dropdown).*
+
+### Conceptual Algorithm: Parsing Fragmented Names
+
+Because BLE platforms (iOS, Android, Web) handle MTU fragmentation differently, developers should implement a stateful buffer to safely reconstruct the string dictionary.
+
+#### 1. Initialization
+
+* Create an empty dynamic byte array (`RX_Buffer`).
+* Set a counter `Names_Found = 0`.
+* Send the 15-byte **Read String Blocks** command for the desired target (AMPs or CABs).
+
+#### 2. Accumulation Phase
+
+* Listen to the `0x0064` Notify characteristic.
+* For every incoming packet, append its raw bytes directly to the end of `RX_Buffer`.
+* *Stop Condition:* Scan the incoming bytes for the Null Terminator (`0x00`). Increment `Names_Found` for each `0x00` detected.
+* When `Names_Found == 20` (The pedal has exactly 20 Amps and 20 Cabs), the transmission is complete.
+
+#### 3. Decoding & Extraction Phase
+
+* Iterate through `RX_Buffer` from start to finish.
+* Split the byte array every time a `0x00` is encountered, resulting in 20 separate sub-arrays.
+* For each sub-array:
+  1. Convert the bytes to ASCII characters.
+  2. Strip the leading numeric characters (ranging from "1" to "20"). Note that this prefix can be 1 or 2 characters long.
+  3. Store the remaining clean string in your application's Model Dictionary.
+* Clear the `RX_Buffer` and repeat the process for the next target (e.g., if you just read AMPs, now request CABs).
+
+*(Important: Normal operation and live RAM polling should remain paused until this handshake algorithm is fully completed for both Amp and Cab memory blocks).*
