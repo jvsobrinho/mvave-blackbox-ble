@@ -106,8 +106,8 @@ The order of the pedals in the audio chain is defined by a continuous block of 6
 
 The pedal stores the textual names of Amp Captures (`.am4`) and Cabinet IRs (`.wav`) in hidden blocks in its Flash memory. The client must extract these before rendering the UI (The "Reading Amps..." loading screen).
 
-* **AMP Names Base Address:** Flash `80 18 01 00` (Little Endian)
-* **CAB (IR) Names Base Address:** Flash `90 18 01 00` (Little Endian)
+* **AMP Names Base Address:** Flash `90 18 01 00` (Little Endian)
+* **CAB (IR) Names Base Address:** Flash `80 18 01 00` (Little Endian)
 
 To read these, the client sends the **Read String Blocks** command (`00 59 23 08 00 00 05...`).
 
