@@ -1,3 +1,7 @@
+> **IMPORTANT NOTE (Outdated Information):** 
+> Some parts of this documentation are currently outdated. During the development of a functional Webapp for the pedal, I discovered corrections needed for the **Preset Sync (formerly labeled VU Meter)** and the **Flash (DMA) Save payload header**. 
+> Please check the open Issues for the updated hex values and correct implementations while I don't have the time to rewrite this document.
+
 # M-Vave Blackbox - Reverse Engineering Project
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE-GPL)
