@@ -3,9 +3,14 @@ license: CC BY-SA 4.0
 author: Joel Victor
 ---
 
-# M-Vave Blackbox BLE Protocol
+# M-Vave Blackbox Base Protocol (BLE & Core)
 
-Reverse engineering of the Bluetooth Low Energy (BLE) communication format for the M-Vave Blackbox multi-effects pedal.
+Reverse engineering of the raw hexadecimal communication format for the M-Vave Blackbox multi-effects pedal.
+
+> **TRANSPORT LAYER NOTE:** This document describes the raw, unpacked `00 59...` byte arrays.
+>
+> * **For Bluetooth (BLE):** These raw packets are sent exactly as documented here directly to the custom GATT TX/RX characteristics.
+> * **For USB MIDI:** These packets CANNOT be sent as-is. They must first undergo a Base-128 (8-to-7 bit) compression algorithm and be wrapped in SysEx markers. Please read the [USB SysEx Protocol](usb_sysex_protocol.md) documentation before attempting wired communication.
 
 ## Summary
 
