@@ -3,9 +3,14 @@ license: CC BY-SA 4.0
 author: Joel Victor
 ---
 
-# M-Vave Blackbox BLE Protocol
+# M-Vave Blackbox Base Protocol (BLE & Core)
 
-Reverse engineering of the Bluetooth Low Energy (BLE) communication format for the M-Vave Blackbox multi-effects pedal.
+Reverse engineering of the raw hexadecimal communication format for the M-Vave Blackbox multi-effects pedal.
+
+> **TRANSPORT LAYER NOTE:** This document describes the raw, unpacked `00 59...` byte arrays.
+>
+> * **For Bluetooth (BLE):** These raw packets are sent exactly as documented here directly to the custom GATT TX/RX characteristics.
+> * **For USB MIDI:** These packets CANNOT be sent as-is. They must first undergo a Base-128 (8-to-7 bit) compression algorithm and be wrapped in SysEx markers. Please read the [USB SysEx Protocol](docs/usb_sysex_protocol.md) documentation before attempting wired communication.
 
 ## Summary
 
@@ -86,7 +91,7 @@ The pedal allows direct Read/Write access to the Flash memory for Preset manipul
 | Action | Base Hexadecimal Payload |
 | :----- | :----------------------- |
 | **Read Flash Preset** | `00 59 23 08 00 00 04 [ADDR_4B] 5C 00 00 [CS]` Extracts a preset silently. Returns via Notify (`0x0064`). |
-| **Write Flash (Save)** | `00 59 22 64 00 00 04 [ADDR_4B] 5C 00 00 55 [92_BYTES_PAYLOAD] [CS]` Permanently saves the matrix to the slot. |
+| **Write Flash (Save)** | `00 59 22 64 00 00 04 [ADDR_4B] 5C 00 00 [92_BYTES_PAYLOAD] [CS]` Permanently saves the matrix to the slot. (Total: 107 bytes. The header is strictly 14 bytes before the payload). |
 | **Read String Blocks (Names)** | `00 59 23 08 00 00 05 00 00 00 [ADDR_4B] [CS]` (15 bytes). Specific request for ASCII data like Amp and Cab names. Uses routing `05` instead of `04`. |
 
 ---
@@ -98,7 +103,7 @@ In addition to the 107-byte Live RAM Dump requested upon connection, the officia
 | Action | Base Hexadecimal Payload | Description |
 | :----- | :----------------------- | :---------- |
 | **Request RAM Dump** | `00 59 23 08 00 00 04 00 00 00 10 5C 00 00 8F` | 16-byte request. The return is a 107-byte array containing the current pedal state. |
-| **VU Meter / Tuner Stream (Candidate)** | `00 59 23 08 00 00 04 00 00 00 20 04 00 00 D7` | Sent continuously every ~1000ms. The pedal responds with short packets containing real-time output levels or tuner pitch data. | 
+| **Preset Sync / Stream** | `00 59 23 08 00 00 04 00 00 00 20 04 00 00 [CS]` | Requests or streams the Current Preset ID. The pedal returns a 19-byte packet where the active preset ID is located at offset `14`. |
 
 ---
 

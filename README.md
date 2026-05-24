@@ -1,7 +1,3 @@
-> **IMPORTANT NOTE (Outdated Information):** 
-> Some parts of this documentation are currently outdated. During the development of a functional Webapp for the pedal, I discovered corrections needed for the **Preset Sync (formerly labeled VU Meter)** and the **Flash (DMA) Save payload header**. 
-> Please check the open Issues for the updated hex values and correct implementations while I don't have the time to rewrite this document.
-
 # M-Vave Blackbox - Reverse Engineering Project
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE-GPL)
@@ -13,7 +9,10 @@ This repository documents the proprietary communication protocol of the **M-Vave
 
 * **Device Name:** `BlackBox_BLE`
 * **Protocol:** Bluetooth Low Energy (BLE) / GATT
-* **USB Interface:** CDC Serial (Under investigation)
+* **USB Interface:** Class-Compliant MIDI (SysEx Base-128 Bit-packing)
+
+> **TECHNICAL NOTE (BLE SysEx Implementation Status):**
+> Analysis of the official app logs shows it strictly relies on the custom GATT data tunnel (`ae40`) for binary communication. Although wired USB communication wraps the Base-128 protocol inside standard MIDI SysEx packets (as documented in [USB SysEx Protocol](docs/usb_sysex_protocol.md)), it **has not been tested** whether the pedal's Bluetooth stack accepts these same SysEx payloads over BLE MIDI when injected with proper BLE MIDI timestamps.
 
 ## The "Hidden" Protocol (Why this project exists)
 
@@ -32,9 +31,17 @@ Bluetooth communication relies on the proprietary `ae40` service.
 
 ## Repository Contents
 
-* `/docs`: Detailed technical specifications of the protocol and physical memory maps.
+* `/docs`: Detailed technical specifications of the protocol, physical memory maps, and transport layers.
 * `/tools`: Python reference scripts for preset reading and checksum validation.
 * `/logs_reference`: Raw hexadecimal packet dumps captured via Wireshark.
+
+## Acknowledgments for USB Protocol Analysis
+
+While the base protocol was independently reverse-engineered via HCI snoop logs over BLE, the translation of this protocol to USB SysEx (Base-128 bit-packing) was confirmed and understood thanks to the prior investigative work and code from the open-source community:
+
+* **Cube Baby Rust Parser** (GPL-3.0) by [pferreir](https://github.com/pferreir/cuvave-midi) - Provided the algorithmic structure of the Base-128 encode/decode process.
+* **M-VAVE/CUVAVE Looper Pro protocol notes** (Gist) by [michaelforney](https://gist.github.com/michaelforney/d3a2790bb5f8cbcb1c931eabb50b5f20) - Validated the SysEx encapsulation payload structure.
+* **M-Vave Chocolate SysEx dumps** by [cbix](https://github.com/cbix/mvave-chocolate-sysex) - Provided the empirical hex dump proof of the protocol.
 
 ---
 
