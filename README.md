@@ -54,6 +54,16 @@ While the base protocol was independently reverse-engineered via HCI snoop logs 
 
 The use of direct flash memory write commands (Save) and the provided scripts is entirely at the user's own risk. The author is not responsible for any bricked devices, hardware damage, or data loss.
 
+## Commercial Use & Attribution
+
+Commercial use of this project is permitted under the terms of the applicable licenses.
+
+If you build commercial hardware, software, or services based on the reverse-engineering research published in this repository, we kindly ask that you provide visible public attribution to this project and include a link to the original repository.
+
+This repository is the original source of the protocol documentation, memory maps, packet analysis, and reference implementations. Public attribution helps users, developers, and researchers identify the original source of the technical research and supports continued open reverse-engineering efforts.
+
+---
+
 ## Licensing
 
 This is a mixed-license project to ensure both the software tools and the discovered knowledge remain open:
